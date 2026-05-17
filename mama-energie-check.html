@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Der Mama-Energie-Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F7F1E8; min-height: 100vh; font-family: 'Outfit', sans-serif; color: #1C1612; }
+.wrap { min-height: 100vh; background: linear-gradient(170deg, #F7F1E8 0%, #EFE5D5 55%, #F7F1E8 100%); display: flex; flex-direction: column; align-items: center; padding: 28px 16px 56px; }
+.inner { width: 100%; max-width: 420px; }
+.brand { text-align: center; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: #A08060; margin-bottom: 28px; }
+.card { background: #fff; border-radius: 28px; padding: 36px 28px; box-shadow: 0 2px 32px rgba(160,100,60,0.1); }
+.pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 13px; border-radius: 100px; margin-bottom: 22px; background: #FBEBE7; color: #C4594A; }
+.intro-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; line-height: 1.2; color: #1C1612; margin-bottom: 14px; }
+.intro-title em { font-style: italic; color: #C4594A; }
+.intro-sub { font-size: 14.5px; line-height: 1.65; color: #6A5040; margin-bottom: 28px; }
+.stats-row { display: flex; gap: 10px; margin-bottom: 28px; }
+.stat-box { flex: 1; background: #F7F1E8; border-radius: 16px; padding: 16px 8px; text-align: center; }
+.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #C4594A; display: block; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: #A08060; font-weight: 500; }
+.btn { display: block; width: 100%; border: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 15px; border-radius: 16px; padding: 17px 20px; transition: all 0.22s ease; }
+.btn-red { background: #C4594A; color: #fff; }
+.btn-red:hover { background: #AD4A3C; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(196,89,74,0.32); }
+.btn-white { background: #fff; color: #C4594A; }
+.btn-white:hover { background: #FEF5F4; transform: translateY(-2px); }
+.screen { display: none; }
+.screen.active { display: block; }
+.progress-track { background: #E8DDD0; height: 3px; border-radius: 100px; margin-bottom: 24px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, #C4594A, #D98060); transition: width 0.45s ease; width: 0%; }
+.q-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.block-chip { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #A08060; background: #EFE5D5; padding: 5px 12px; border-radius: 100px; }
+.q-count { font-size: 12px; color: #A08060; }
+.q-card { background: #fff; border-radius: 28px; padding: 32px 24px 26px; box-shadow: 0 2px 32px rgba(160,100,60,0.09); margin-bottom: 14px; }
+.q-text { font-family: 'Cormorant Garamond', serif; font-size: 24px; line-height: 1.35; color: #1C1612; margin-bottom: 26px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.opt-btn { width: 100%; border: 1.5px solid #E8DDD0; background: #F7F1E8; border-radius: 15px; padding: 16px 18px; font-family: 'Outfit', sans-serif; font-size: 15px; color: #1C1612; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 13px; transition: all 0.2s ease; }
+.opt-btn:hover { border-color: #C4594A; background: #FBEBE7; transform: translateX(4px); }
+.opt-btn.chosen { border-color: #C4594A; background: #FBEBE7; color: #C4594A; font-weight: 500; }
+.radio-ring { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #C8B8A8; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.opt-btn.chosen .radio-ring { border-color: #C4594A; background: #C4594A; }
+.radio-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; opacity: 0; transition: opacity 0.15s; }
+.opt-btn.chosen .radio-dot { opacity: 1; }
+.block-hint { background: linear-gradient(135deg, #FDE8DF 0%, #F7F1E8 100%); border-radius: 16px; padding: 16px 18px; margin-bottom: 14px; border-left: 3px solid #C4594A; font-size: 13.5px; color: #6A4A3A; line-height: 1.5; display: none; }
+.block-hint strong { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #C4594A; margin-bottom: 4px; }
+.result-top { background: #fff; border-radius: 28px 28px 0 0; padding: 36px 28px 28px; }
+.result-emoji { font-size: 40px; margin-bottom: 14px; display: block; }
+.result-pill { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 13px; border-radius: 100px; margin-bottom: 18px; display: inline-block; color: #fff; }
+.result-headline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; line-height: 1.35; color: #1C1612; }
+.result-body { background: #fff; border-radius: 0 0 28px 28px; padding: 0 28px 36px; box-shadow: 0 2px 32px rgba(160,100,60,0.08); margin-bottom: 14px; }
+.result-divider { height: 1px; background: #F0E8DC; margin-bottom: 24px; }
+.result-p { font-size: 14.5px; line-height: 1.72; color: #5A4030; margin-bottom: 16px; }
+.result-p:last-child { margin-bottom: 0; }
+.cta-box { border-radius: 28px; padding: 32px 28px; margin-bottom: 14px; color: #fff; }
+.cta-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; line-height: 1.3; margin-bottom: 12px; }
+.cta-body { font-size: 14px; line-height: 1.62; opacity: 0.88; margin-bottom: 24px; }
+.restart-link { display: block; background: none; border: none; color: #A08060; font-family: 'Outfit', sans-serif; font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-align: center; padding: 8px; margin: 0 auto; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp 0.38s ease forwards; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+.slide-in { animation: slideIn 0.32s ease forwards; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="inner">
+    <p class="brand">Sonja &middot; Mama mit Energie</p>
+
+    <div id="screen-intro" class="screen active fade-up">
+      <div class="card">
+        <span class="pill">&#10022; Kostenloser Check</span>
+        <h1 class="intro-title">Der Mama-<em>Energie</em>-Check</h1>
+        <p class="intro-sub">Verstehe in 3 Minuten, warum du so erschöpft bist &mdash; und wo deine Energie täglich verloren geht.</p>
+        <div class="stats-row">
+          <div class="stat-box"><span class="stat-num">7</span><span class="stat-label">Fragen</span></div>
+          <div class="stat-box"><span class="stat-num">3'</span><span class="stat-label">Minuten</span></div>
+          <div class="stat-box"><span class="stat-num">1</span><span class="stat-label">Aha-Moment</span></div>
+        </div>
+        <button class="btn btn-red" id="btn-start">Jetzt starten &rarr;</button>
+      </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+      <div class="q-meta">
+        <span class="block-chip" id="block-label"></span>
+        <span class="q-count" id="q-count"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="block-hint" id="block-hint">
+        <strong>Block 2 von 2</strong>
+        Jetzt schauen wir, was dir konkret täglich Energie kostet.
+      </div>
+      <div class="q-card" id="q-card">
+        <p class="q-text" id="q-text"></p>
+        <div class="options" id="options"></div>
+      </div>
+    </div>
+
+    <div id="screen-result" class="screen">
+      <div class="result-top">
+        <span class="result-emoji" id="r-emoji"></span>
+        <span class="result-pill" id="r-pill"></span>
+        <p class="result-headline" id="r-headline"></p>
+      </div>
+      <div class="result-body">
+        <div class="result-divider"></div>
+        <div id="r-paragraphs"></div>
+      </div>
+      <div class="cta-box" id="cta-box">
+        <p class="cta-title">Die Lösung ist nicht mehr tun &mdash; sondern anders denken.</p>
+        <p class="cta-body">Im Minikurs lernst du genau das: Glaubenssätze auflösen, gesellschaftliche Anforderungen hinterfragen und auf deine eigene Intuition hören.</p>
+        <a href="#" class="btn btn-white" id="btn-kurs" style="text-align:center;text-decoration:none;display:block;">Zum Minikurs &rarr;</a>
+      </div>
+      <button class="restart-link" id="btn-restart">Nochmal starten</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var FRAGEN = [
+  { block: "Mein Kopf ist voll",      text: "Denkst du beim Aufwachen sofort an die To-dos der anderen?",                        inv: false },
+  { block: "Mein Kopf ist voll",      text: "Denkst du zuerst daran, was andere brauchen, bevor du an dich denkst?",            inv: false },
+  { block: "Mein Kopf ist voll",      text: "Sagst du 'Ich schaff das schon', obwohl du eigentlich erschoepft bist?",           inv: false },
+  { block: "Mein Kopf ist voll",      text: "Hast du diese Woche etwas nur fuer dich getan?",                                    inv: true  },
+  { block: "Meine Energie-Raeuber",   text: "Sagst du Ja, obwohl du eigentlich Nein meinst?",                                    inv: false },
+  { block: "Meine Energie-Raeuber",   text: "Erledigst du mehrere Dinge gleichzeitig?",                                          inv: false },
+  { block: "Meine Energie-Raeuber",   text: "Machst du dir Sorgen um Dinge, die du sowieso nicht aendern kannst?",              inv: false }
+];
+
+var FRAGEN_TEXT = [
+  "Denkst du beim Aufwachen sofort an die To-dos der anderen?",
+  "Denkst du zuerst daran, was andere brauchen, bevor du an dich denkst?",
+  "Sagst du \u201aIch schaff das schon\u2018, obwohl du eigentlich erschöpft bist?",
+  "Hast du diese Woche etwas nur für dich getan?",
+  "Sagst du Ja, obwohl du eigentlich Nein meinst?",
+  "Erledigst du mehrere Dinge gleichzeitig?",
+  "Machst du dir Sorgen um Dinge, die du sowieso nicht ändern kannst?"
+];
+
+var BLOCK_NAMEN = [
+  "Mein Kopf ist voll",
+  "Mein Kopf ist voll",
+  "Mein Kopf ist voll",
+  "Mein Kopf ist voll",
+  "Meine Energie-Räuber",
+  "Meine Energie-Räuber",
+  "Meine Energie-Räuber"
+];
+
+var INVERTIERT = [false, false, false, true, false, false, false];
+
+var ERGEBNISSE = {
+  A: {
+    emoji: "\uD83D\uDD25",
+    tag: "Ergebnis A",
+    headline: "Dein Kopf läuft auf Hochtouren - und das schon seit einer Weile.",
+    texte: [
+      "Du planst, organisierst und funktionierst für alle um dich herum. Gleichzeitig fragst du dich, warum du so erschöpft bist, obwohl du doch nichts Besonderes machst. Die Antwort ist einfach: Du machst sehr viel - nur fast nichts davon für dich selbst.",
+      "Deine größten Energie-Räuber sind gerade das ständige Ja-Sagen und das Multitasking. Beides kostet dich mehr Kraft als du denkst - nicht weil du schwach bist, sondern weil kein Mensch das auf Dauer durchhält.",
+      "Das Gute: Du musst nicht alles auf einmal ändern. Ein kleiner erster Schritt reicht. Und der beginnt damit, dass du erkennst - du darfst auch an dich denken. Nicht irgendwann. Jetzt."
+    ],
+    farbe: "#C4594A", dunkel: "#A4473A"
+  },
+  B: {
+    emoji: "\u2728",
+    tag: "Ergebnis B",
+    headline: "Du spürst es schon - aber du hörst noch nicht ganz hin.",
+    texte: [
+      "Du merkst, dass etwas nicht stimmt. Manchmal bist du kurz vor dem Limit, manchmal läuft es ganz okay. Aber dieses Manchmal ist ein Zeichen - dein Körper und dein Kopf schicken dir bereits Signale, dass sie mehr Unterstützung brauchen.",
+      "Du neigst dazu, deine eigenen Bedürfnisse auf später zu verschieben. Wenn das Kind schläft. Wenn der Haushalt fertig ist. Wenn ich mal Zeit habe. Aber dieses Später kommt selten - weil immer etwas kommt.",
+      "Du bist auf dem richtigen Weg, weil du anfängst hinzuschauen. Jetzt geht es darum, aus dem Manchmal ein bewusstes Ich tue es zu machen."
+    ],
+    farbe: "#B07D2A", dunkel: "#906518"
+  },
+  C: {
+    emoji: "\uD83C\uDF3F",
+    tag: "Ergebnis C",
+    headline: "Du hast bereits etwas Wichtiges verstanden - und das ist nicht selbstverständlich.",
+    texte: [
+      "Du gibst bereits auf dich acht - bewusst oder instinktiv. Du weißt, dass du nur dann gut für andere da sein kannst, wenn du auch auf dich schaust. Das ist keine Selbstverständlichkeit. Viele Mütter brauchen lange, um das zu erkennen.",
+      "Trotzdem - schau genau hin, wo du Ja geantwortet hast. Genau dort lohnt es sich tiefer zu gehen. Denn auch kleine Energie-Räuber summieren sich über Wochen und Monate."
+    ],
+    farbe: "#5A8A6A", dunkel: "#3E6E50"
+  }
+};
+
+var aktFrage = 0;
+var punkte = [];
+var gesperrt = false;
+
+function zeigeScreen(id) {
+  var alle = document.querySelectorAll('.screen');
+  for (var i = 0; i < alle.length; i++) { alle[i].classList.remove('active', 'fade-up'); }
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.offsetWidth;
+  el.classList.add('fade-up');
+}
+
+function startQuiz() {
+  aktFrage = 0;
+  punkte = [];
+  zeigeScreen('screen-quiz');
+  zeigeFrage();
+}
+
+function zeigeFrage() {
+  gesperrt = false;
+  document.getElementById('block-hint').style.display = aktFrage === 4 ? 'block' : 'none';
+  document.getElementById('block-label').textContent = BLOCK_NAMEN[aktFrage];
+  document.getElementById('q-count').textContent = (aktFrage + 1) + ' / 7';
+  document.getElementById('q-text').textContent = FRAGEN_TEXT[aktFrage];
+  document.getElementById('progress-fill').style.width = Math.round(((aktFrage + 1) / 7) * 100) + '%';
+
+  var karte = document.getElementById('q-card');
+  karte.classList.remove('slide-in');
+  karte.offsetWidth;
+  karte.classList.add('slide-in');
+
+  var container = document.getElementById('options');
+  container.innerHTML = '';
+  var antworten = ['Ja', 'Manchmal', 'Nein'];
+  for (var i = 0; i < antworten.length; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="radio-ring"><span class="radio-dot"></span></span>' + antworten[i];
+    btn.setAttribute('data-wert', antworten[i]);
+    btn.addEventListener('click', antwortWahl);
+    container.appendChild(btn);
+  }
+}
+
+function antwortWahl(e) {
+  if (gesperrt) return;
+  gesperrt = true;
+  var btn = e.currentTarget;
+  var wert = btn.getAttribute('data-wert');
+  var basis = wert === 'Ja' ? 2 : wert === 'Manchmal' ? 1 : 0;
+  var score = INVERTIERT[aktFrage] ? 2 - basis : basis;
+
+  var alle = document.querySelectorAll('.opt-btn');
+  for (var i = 0; i < alle.length; i++) { alle[i].classList.remove('chosen'); }
+  btn.classList.add('chosen');
+
+  setTimeout(function() {
+    punkte.push(score);
+    if (aktFrage < 6) {
+      aktFrage++;
+      zeigeFrage();
+    } else {
+      zeigeErgebnis();
+    }
+  }, 400);
+}
+
+function zeigeErgebnis() {
+  var sum = 0;
+  for (var i = 0; i < punkte.length; i++) { sum += punkte[i]; }
+  var key = sum >= 10 ? 'A' : sum >= 5 ? 'B' : 'C';
+  var e = ERGEBNISSE[key];
+
+  document.getElementById('r-emoji').textContent = e.emoji;
+  var pill = document.getElementById('r-pill');
+  pill.textContent = e.tag;
+  pill.style.background = e.farbe;
+  document.getElementById('r-headline').textContent = e.headline;
+
+  var ps = document.getElementById('r-paragraphs');
+  ps.innerHTML = '';
+  for (var i = 0; i < e.texte.length; i++) {
+    var p = document.createElement('p');
+    p.className = 'result-p';
+    p.textContent = e.texte[i];
+    ps.appendChild(p);
+  }
+
+  document.getElementById('cta-box').style.background =
+    'linear-gradient(135deg, ' + e.farbe + ' 0%, ' + e.dunkel + ' 100%)';
+
+  zeigeScreen('screen-result');
+}
+
+document.getElementById('btn-start').addEventListener('click', startQuiz);
+document.getElementById('btn-restart').addEventListener('click', function() {
+  aktFrage = 0; punkte = [];
+  zeigeScreen('screen-intro');
+});
+</script>
+</body>
+</html>
